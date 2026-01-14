@@ -21,10 +21,11 @@ repositories {
 extra["springCloudVersion"] = "2025.1.0"
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-webmvc")
-	implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc")
-	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    implementation("org.springframework.boot:spring-boot-starter-webmvc")
+    implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc")
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
+    testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 dependencyManagement {
