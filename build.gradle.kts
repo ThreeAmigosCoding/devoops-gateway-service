@@ -23,6 +23,7 @@ extra["springCloudVersion"] = "2025.1.0"
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webmvc")
     implementation("org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc")
+    implementation("net.logstash.logback:logstash-logback-encoder:8.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
