@@ -41,7 +41,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Accommodation endpoints - GET only
             new PublicEndpoint("/api/accommodation", HttpMethod.GET),
             new PublicEndpoint("/api/accommodation/*/photos", HttpMethod.GET),
-            new PublicEndpoint("/api/accommodation/*/photos/*", HttpMethod.GET)
+            new PublicEndpoint("/api/accommodation/*/photos/*", HttpMethod.GET),
+            // Availability endpoints - GET only
+            new PublicEndpoint("/api/accommodation/*/availability", HttpMethod.GET),
+            new PublicEndpoint("/api/accommodation/*/availability/*", HttpMethod.GET)
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
