@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.jspecify.annotations.NonNull;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
@@ -23,10 +24,24 @@ import java.util.*;
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final List<String> PUBLIC_PATHS = List.of(
-            "/api/user/auth/**",
-            "/api/user/test",
-            "/actuator/**"
+    private record PublicEndpoint(String pattern, HttpMethod... methods) {
+        boolean matchesMethod(String method) {
+            if (methods.length == 0) {
+                return true; // No method restriction = all methods allowed
+            }
+            return Arrays.stream(methods).anyMatch(m -> m.name().equalsIgnoreCase(method));
+        }
+    }
+
+    private static final List<PublicEndpoint> PUBLIC_ENDPOINTS = List.of(
+            // Auth endpoints - all methods
+            new PublicEndpoint("/api/user/auth/**"),
+            new PublicEndpoint("/api/user/test"),
+            new PublicEndpoint("/actuator/**"),
+            // Accommodation endpoints - GET only
+            new PublicEndpoint("/api/accommodation", HttpMethod.GET),
+            new PublicEndpoint("/api/accommodation/*/photos", HttpMethod.GET),
+            new PublicEndpoint("/api/accommodation/*/photos/*", HttpMethod.GET)
     );
 
     private final AntPathMatcher pathMatcher = new AntPathMatcher();
@@ -41,8 +56,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain) throws ServletException, IOException {
         String path = request.getRequestURI();
+        String method = request.getMethod();
 
-        if (isPublicPath(path)) {
+        if (isPublicEndpoint(path, method)) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -76,8 +92,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
     }
 
-    private boolean isPublicPath(String path) {
-        return PUBLIC_PATHS.stream().anyMatch(pattern -> pathMatcher.match(pattern, path));
+    private boolean isPublicEndpoint(String path, String method) {
+        return PUBLIC_ENDPOINTS.stream()
+                .anyMatch(endpoint ->
+                        pathMatcher.match(endpoint.pattern(), path) && endpoint.matchesMethod(method));
     }
 
     private void sendError(HttpServletResponse response, String message) throws IOException {
