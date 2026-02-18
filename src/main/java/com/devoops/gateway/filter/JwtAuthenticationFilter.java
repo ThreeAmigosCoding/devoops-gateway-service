@@ -40,6 +40,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             new PublicEndpoint("/actuator/**"),
             // Accommodation endpoints - GET only
             new PublicEndpoint("/api/accommodation", HttpMethod.GET),
+            new PublicEndpoint("/api/accommodation/*", HttpMethod.GET),
+            new PublicEndpoint("/api/accommodation/host/*", HttpMethod.GET),
             new PublicEndpoint("/api/accommodation/*/photos", HttpMethod.GET),
             new PublicEndpoint("/api/accommodation/*/photos/*", HttpMethod.GET),
             // Availability endpoints - GET only
