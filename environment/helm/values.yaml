@@ -1,0 +1,54 @@
+fullnameOverride: devoops-gateway-service
+replicaCount: 1
+
+image:
+  registry: docker.io
+  repository: threeamigoscoding/devoops-gateway-service
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  httpPort: 8080
+  grpc:
+    enabled: false
+
+ingress:
+  enabled: true
+  className: nginx
+  host: devoops.local
+  path: /
+  pathType: Prefix
+  annotations: {}
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 250m
+  limits:
+    memory: 512Mi
+    cpu: 1000m
+
+health:
+  path: /actuator/health
+  periodSeconds: 10
+  failureThreshold: 3
+  startup:
+    initialDelaySeconds: 10
+    periodSeconds: 5
+    failureThreshold: 60
+
+configData:
+  JAVA_TOOL_OPTIONS: "-XX:+UseSerialGC -Xms128m -Xmx384m -XX:ActiveProcessorCount=1"
+  SERVER_PORT: "8080"
+  USER_SERVICE_URL: "http://devoops-user-service:8080"
+  ACCOMMODATION_SERVICE_URL: "http://devoops-accommodation-service:8080"
+  NOTIFICATION_SERVICE_URL: "http://devoops-notification-service:8080"
+  RATING_SERVICE_URL: "http://devoops-rating-service:8080"
+  RESERVATION_SERVICE_URL: "http://devoops-reservation-service:8080"
+  LOGSTASH_HOST: "devoops-logstash:5000"
+  ZIPKIN_HOST: "devoops-jaeger"
+  ZIPKIN_PORT: "9411"
+
+secretData:
+  JWT_SECRET: "dGhpcyBpcyBhIHZlcnkgc2VjdXJlIGtleSBmb3IgSFMyNTYgdGhhdCBpcyBhdCBsZWFzdCAyNTYgYml0cyBsb25n"
